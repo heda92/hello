@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 0.8s ease;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 12vw, 8rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-weight: 400;
+            opacity: 0;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(30px, -30px) rotate(120deg);
+            }
+            66% {
+                transform: translate(-20px, 20px) rotate(240deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        <h1>Hello World</h1>
+        <p class="subtitle"></p>
+    </div>
+
+    <script>
+        // Catppuccin color palettes
+        const palettes = {
+            latte: {
+                base: '#eff1f5',
+                text: '#4c4f69',
+                accent: '#1e66f5',
+                pink: '#ea76cb',
+                mauve: '#8839ef',
+                red: '#d20f39',
+                peach: '#fe640b',
+                yellow: '#df8e1d',
+                green: '#40a02b',
+                teal: '#179299',
+                sky: '#04a5e5'
+            },
+            frappe: {
+                base: '#303446',
+                text: '#c6d0f5',
+                accent: '#8caaee',
+                pink: '#f4b8e4',
+                mauve: '#ca9ee6',
+                red: '#e78284',
+                peach: '#ef9f76',
+                yellow: '#e5c890',
+                green: '#a6d189',
+                teal: '#81c8be',
+                sky: '#99d1db'
+            },
+            macchiato: {
+                base: '#24273a',
+                text: '#cad3f5',
+                accent: '#8aadf4',
+                pink: '#f5bde6',
+                mauve: '#c6a0f6',
+                red: '#ed8796',
+                peach: '#f5a97f',
+                yellow: '#eed49f',
+                green: '#a6da95',
+                teal: '#8bd5ca',
+                sky: '#91d7e3'
+            },
+            mocha: {
+                base: '#1e1e2e',
+                text: '#cdd6f4',
+                accent: '#89b4fa',
+                pink: '#f5c2e7',
+                mauve: '#cba6f7',
+                red: '#f38ba8',
+                peach: '#fab387',
+                yellow: '#f9e2af',
+                green: '#a6e3a1',
+                teal: '#94e2d5',
+                sky: '#89dceb'
+            }
+        };
+
+        // Designer jokes
+        const jokes = [
+            "I'm not procrastinating, I'm letting the design marinate.",
+            "Why do designers prefer dark mode? Because light attracts bugs.",
+            "I have a font addiction. My favorite support group is Helvetica Anonymous.",
+            "Designers don't make mistakes. We call them 'happy little iterations'.",
+            "I'm fluent in three languages: English, Sarcasm, and Helvetica.",
+            "My design process: Ctrl+Z, Ctrl+Z, Ctrl+Z, Ctrl+Z, Ctrl+Z",
+            "I don't always test my code, but when I do, I do it in production."
+        ];
+
+        // Pick random palette and joke
+        const paletteNames = Object.keys(palettes);
+        const randomPalette = palettes[paletteNames[Math.floor(Math.random() * paletteNames.length)]];
+        const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+
+        // Apply colors
+        document.body.style.backgroundColor = randomPalette.base;
+        document.querySelector('h1').style.color = randomPalette.accent;
+        document.querySelector('.subtitle').style.color = randomPalette.text;
+        document.querySelector('.subtitle').textContent = randomJoke;
+
+        // Background animation with floating shapes
+        const bgCanvas = document.getElementById('bg-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+
+        function resizeBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        resizeBgCanvas();
+        window.addEventListener('resize', resizeBgCanvas);
+
+        const shapes = [];
+        const shapeCount = 15;
+        const colors = [randomPalette.pink, randomPalette.mauve, randomPalette.peach, randomPalette.teal, randomPalette.sky];
+
+        for (let i = 0; i < shapeCount; i++) {
+            shapes.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                size: Math.random() * 100 + 50,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.01,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                type: Math.random() > 0.5 ? 'circle' : 'square'
+            });
+        }
+
+        function animateBackground() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            shapes.forEach(shape => {
+                shape.x += shape.speedX;
+                shape.y += shape.speedY;
+                shape.rotation += shape.rotationSpeed;
+
+                if (shape.x < -shape.size) shape.x = bgCanvas.width + shape.size;
+                if (shape.x > bgCanvas.width + shape.size) shape.x = -shape.size;
+                if (shape.y < -shape.size) shape.y = bgCanvas.height + shape.size;
+                if (shape.y > bgCanvas.height + shape.size) shape.y = -shape.size;
+
+                bgCtx.save();
+                bgCtx.translate(shape.x, shape.y);
+                bgCtx.rotate(shape.rotation);
+                bgCtx.globalAlpha = 0.08;
+
+                if (shape.type === 'circle') {
+                    bgCtx.beginPath();
+                    bgCtx.arc(0, 0, shape.size / 2, 0, Math.PI * 2);
+                    bgCtx.fillStyle = shape.color;
+                    bgCtx.fill();
+                } else {
+                    bgCtx.fillStyle = shape.color;
+                    bgCtx.fillRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
+                }
+
+                bgCtx.restore();
+            });
+
+            requestAnimationFrame(animateBackground);
+        }
+        animateBackground();
+
+        // Confetti animation
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const confettiCtx = confettiCanvas.getContext('2d');
+
+        function resizeConfettiCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        resizeConfettiCanvas();
+        window.addEventListener('resize', resizeConfettiCanvas);
+
+        const confetti = [];
+        const confettiCount = 150;
+
+        for (let i = 0; i < confettiCount; i++) {
+            confetti.push({
+                x: Math.random() * confettiCanvas.width,
+                y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                size: Math.random() * 8 + 4,
+                speedY: Math.random() * 3 + 2,
+                speedX: (Math.random() - 0.5) * 2,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                opacity: 1
+            });
+        }
+
+        let confettiActive = true;
+        let fadeStart = false;
+        const fadeDelay = 3000;
+
+        setTimeout(() => {
+            fadeStart = true;
+        }, fadeDelay);
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+            let allGone = true;
+
+            confetti.forEach(piece => {
+                if (piece.opacity <= 0) return;
+
+                allGone = false;
+                piece.y += piece.speedY;
+                piece.x += piece.speedX;
+                piece.rotation += piece.rotationSpeed;
+
+                if (fadeStart) {
+                    piece.opacity -= 0.01;
+                    if (piece.opacity < 0) piece.opacity = 0;
+                }
+
+                confettiCtx.save();
+                confettiCtx.translate(piece.x, piece.y);
+                confettiCtx.rotate(piece.rotation);
+                confettiCtx.globalAlpha = piece.opacity;
+                confettiCtx.fillStyle = piece.color;
+                confettiCtx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size / 2);
+                confettiCtx.restore();
+            });
+
+            if (allGone) {
+                confettiActive = false;
+            } else {
+                requestAnimationFrame(animateConfetti);
+            }
+        }
+        animateConfetti();
+    </script>
+</body>
+</html>
