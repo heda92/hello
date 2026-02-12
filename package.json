@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A stunning modern landing page with Hello World",
   "scripts": {
-    "dev": "bun --hot --port 5000 index.html"
+    "dev": "bun --hot --port 5000 index.html",
+    "start": "bun server.js"
   }
 }
