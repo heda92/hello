@@ -188,7 +188,15 @@
 
         // Apply colors
         document.body.style.backgroundColor = randomPalette.base;
-        document.querySelector('h1').style.color = randomPalette.accent;
+        
+        // Dynamic H1 color based on background brightness
+        const hex = randomPalette.base.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        document.querySelector('h1').style.color = brightness > 128 ? '#000000' : '#ffffff';
+        
         document.querySelector('.subtitle').style.color = randomPalette.text;
         document.querySelector('.subtitle').textContent = randomJoke;
 
